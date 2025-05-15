@@ -28,11 +28,11 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun onTitleChange(value: String) {
-        _title.value = value
+        _title.value = value.trim()
     }
 
     fun onDescriptionChange(value: String) {
-        _description.value = value
+        _description.value = value.trim()
     }
 
     fun onSelectedStatusChange(value: TaskStatus) {

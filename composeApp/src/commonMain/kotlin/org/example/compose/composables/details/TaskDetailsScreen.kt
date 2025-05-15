@@ -52,8 +52,8 @@ fun TaskDetailsScreen(
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    val task by viewModel.task.collectAsStateWithLifecycle(null)
-    val lastUpdated by viewModel.lastUpdated.collectAsStateWithLifecycle(null)
+    val task by viewModel.task.collectAsStateWithLifecycle()
+    val lastUpdated by viewModel.lastUpdated.collectAsStateWithLifecycle()
     val deleted by viewModel.deleted.collectAsStateWithLifecycle()
 
     val topAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()

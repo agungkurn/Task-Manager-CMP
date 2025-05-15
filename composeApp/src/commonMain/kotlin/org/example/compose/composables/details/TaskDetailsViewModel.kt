@@ -1,11 +1,15 @@
 package org.example.compose.composables.details
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -25,10 +29,13 @@ class TaskDetailsViewModel(private val repository: TaskRepository) : ViewModel()
     private val _deleted = MutableStateFlow(false)
     val deleted = _deleted.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val task = id.filterNotNull()
         .flatMapLatest {
             repository.getTaskByIdAsFlow(it)
-        }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val lastUpdated = task.filterNotNull()
         .mapLatest {
             Instant.fromEpochMilliseconds(it.lastUpdated)
@@ -54,7 +61,7 @@ class TaskDetailsViewModel(private val repository: TaskRepository) : ViewModel()
                         )
                     }
                 )
-        }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     fun getTask(id: Long) {
         this.id.value = id
