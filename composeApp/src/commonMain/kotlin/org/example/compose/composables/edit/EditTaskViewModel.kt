@@ -33,8 +33,10 @@ class EditTaskViewModel(private val repository: TaskRepository) : ViewModel() {
             _selectedStatus,
             savedTask
         ) { newTitle, newDescription, newStatus, savedTask ->
-            (newTitle.isNotBlank() && newTitle != savedTask?.title) || (newDescription.isNotBlank()
-                    && newDescription != savedTask?.description) || newStatus != savedTask?.status
+            (newTitle.trim().isNotBlank() && newTitle.trim() != savedTask?.title)
+                    || (newDescription.trim()
+                .isNotBlank() && newDescription.trim() != savedTask?.description)
+                    || newStatus != savedTask?.status
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun setInitialData(taskId: Long) {
@@ -48,11 +50,11 @@ class EditTaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun onTitleChange(value: String) {
-        _title.value = value.trim()
+        _title.value = value
     }
 
     fun onDescriptionChange(value: String) {
-        _description.value = value.trim()
+        _description.value = value
     }
 
     fun onSelectedStatusChange(value: TaskStatus) {

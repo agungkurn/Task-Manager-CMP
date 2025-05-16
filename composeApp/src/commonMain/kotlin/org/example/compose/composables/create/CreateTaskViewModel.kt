@@ -24,15 +24,15 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
     val saved = _saved.asStateFlow()
 
     val enableSave = combine(_title, _description) { newTitle, newDescription ->
-        newTitle.isNotBlank() && newDescription.isNotBlank()
+        newTitle.trim().isNotBlank() && newDescription.trim().isNotBlank()
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun onTitleChange(value: String) {
-        _title.value = value.trim()
+        _title.value = value
     }
 
     fun onDescriptionChange(value: String) {
-        _description.value = value.trim()
+        _description.value = value
     }
 
     fun onSelectedStatusChange(value: TaskStatus) {

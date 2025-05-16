@@ -58,7 +58,7 @@ fun EditTaskScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = "Create New Task") },
+                title = { Text(text = "Edit Task") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "back")
