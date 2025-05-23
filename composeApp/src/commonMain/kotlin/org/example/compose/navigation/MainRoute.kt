@@ -1,4 +1,4 @@
-package org.example.compose
+package org.example.compose.navigation
 
 import kotlinx.serialization.Serializable
 

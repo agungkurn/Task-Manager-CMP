@@ -26,9 +26,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.example.compose.composables.TaskStatusSelector
-import org.example.compose.data.TaskRepository
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +36,7 @@ fun EditTaskScreen(
     onNavigateUp: () -> Unit,
     onSaved: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: EditTaskViewModel = viewModel { EditTaskViewModel(TaskRepository) }
+    viewModel: EditTaskViewModel = koinViewModel()
 ) {
     val title by viewModel.title.collectAsStateWithLifecycle()
     val description by viewModel.description.collectAsStateWithLifecycle()

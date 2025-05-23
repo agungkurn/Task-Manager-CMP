@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.example.compose.data.TaskRepository
 import org.example.compose.model.TaskStatus
 
@@ -40,11 +41,13 @@ class CreateTaskViewModel(private val repository: TaskRepository) : ViewModel() 
     }
 
     fun submit() {
-        repository.addTask(
-            title = _title.value,
-            description = _description.value,
-            status = _selectedStatus.value
-        )
-        _saved.value = true
+        viewModelScope.launch {
+            repository.addTask(
+                title = _title.value,
+                description = _description.value,
+                status = _selectedStatus.value
+            )
+            _saved.value = true
+        }
     }
 }

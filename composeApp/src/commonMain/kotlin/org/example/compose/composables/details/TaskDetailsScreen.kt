@@ -35,10 +35,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.example.compose.composables.TaskStatusSelector
-import org.example.compose.data.TaskRepository
 import org.example.compose.model.Task
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,7 +47,7 @@ fun TaskDetailsScreen(
     onEdit: (Task) -> Unit,
     onDeleted: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TaskDetailsViewModel = viewModel { TaskDetailsViewModel(TaskRepository) }
+    viewModel: TaskDetailsViewModel = koinViewModel()
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 

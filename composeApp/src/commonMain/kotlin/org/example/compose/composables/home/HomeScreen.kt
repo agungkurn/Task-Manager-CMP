@@ -14,9 +14,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AutoMode
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -24,15 +28,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import org.example.compose.data.TaskRepository
+import org.example.compose.AppTheme
 import org.example.compose.model.Task
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,13 +46,31 @@ fun HomeScreen(
     onCreateTask: () -> Unit,
     onOpenTask: (Task) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel { HomeViewModel(TaskRepository) }
+    viewModel: HomeViewModel = koinViewModel()
 ) {
-    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsState()
+    val currentTheme by viewModel.currentTheme.collectAsState()
+
+    val icon = remember(currentTheme) {
+        when (currentTheme) {
+            AppTheme.System -> Icons.Default.AutoMode
+            AppTheme.Dark -> Icons.Default.DarkMode
+            AppTheme.Light -> Icons.Default.LightMode
+        }
+    }
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Tasks") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Tasks") },
+                actions = {
+                    IconButton(onClick = viewModel::toggleTheme) {
+                        Icon(icon, contentDescription = stringResource(currentTheme.stringResource))
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateTask) {
                 Icon(Icons.Default.Add, contentDescription = "create new task")

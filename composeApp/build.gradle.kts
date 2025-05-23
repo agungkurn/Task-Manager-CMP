@@ -41,11 +41,17 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(compose.materialIconsExtended)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.kotlinx.datetime)
             implementation(libs.navigation)
             implementation(libs.kotlinx.serialization)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.bundles.koin)
+            implementation(libs.napier)
+            implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
         }
     }
 }

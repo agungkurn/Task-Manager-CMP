@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -68,13 +69,17 @@ class TaskDetailsViewModel(private val repository: TaskRepository) : ViewModel()
     }
 
     fun delete(task: Task) {
-        repository.deleteTask(task)
-        _deleted.value = true
+        viewModelScope.launch {
+            repository.deleteTask(task)
+            _deleted.value = true
+        }
     }
 
     fun changeStatus(status: TaskStatus) {
-        id.value?.let {
-            repository.changeStatus(id = it, taskStatus = status)
+        viewModelScope.launch {
+            id.value?.let {
+                repository.changeStatus(id = it, taskStatus = status)
+            }
         }
     }
 }

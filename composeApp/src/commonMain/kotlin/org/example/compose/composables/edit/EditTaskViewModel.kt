@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import org.example.compose.data.TaskRepository
 import org.example.compose.model.Task
 import org.example.compose.model.TaskStatus
@@ -40,12 +41,14 @@ class EditTaskViewModel(private val repository: TaskRepository) : ViewModel() {
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), false)
 
     fun setInitialData(taskId: Long) {
-        repository.getTaskByIdAsOneShot(taskId)?.let { task ->
-            savedTask.value = task
+        viewModelScope.launch {
+            repository.getTaskByIdAsOneShot(taskId)?.let { task ->
+                savedTask.value = task
 
-            _title.value = task.title
-            _description.value = task.description
-            _selectedStatus.value = task.status
+                _title.value = task.title
+                _description.value = task.description
+                _selectedStatus.value = task.status
+            }
         }
     }
 
@@ -62,14 +65,16 @@ class EditTaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun submit() {
-        savedTask.value?.let {
-            repository.updateTask(
-                id = it.id,
-                title = _title.value,
-                description = _description.value,
-                status = _selectedStatus.value
-            )
-            _saved.value = true
+        viewModelScope.launch {
+            savedTask.value?.let {
+                repository.updateTask(
+                    id = it.id,
+                    title = _title.value,
+                    description = _description.value,
+                    status = _selectedStatus.value
+                )
+                _saved.value = true
+            }
         }
     }
 }

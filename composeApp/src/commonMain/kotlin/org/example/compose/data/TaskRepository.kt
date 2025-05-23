@@ -1,5 +1,6 @@
 package org.example.compose.data
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -9,18 +10,30 @@ import org.example.compose.model.TaskStatus
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-object TaskRepository {
+interface TaskRepository {
+    val tasks: Flow<List<Task>>
+
+    fun getTaskByIdAsFlow(id: Long): Flow<Task?>
+    suspend fun getTaskByIdAsOneShot(id: Long): Task?
+    suspend fun addTask(title: String, description: String, status: TaskStatus)
+    suspend fun updateTask(id: Long, title: String, description: String, status: TaskStatus)
+    suspend fun deleteTask(task: Task)
+    suspend fun changeStatus(id: Long, taskStatus: TaskStatus)
+}
+
+class TaskRepositoryImpl : TaskRepository {
     private val _tasks = MutableStateFlow(listOf<Task>())
-    val tasks = _tasks.asStateFlow()
+    override val tasks = _tasks.asStateFlow()
 
-    fun getTaskByIdAsFlow(id: Long) = tasks.map { it.firstOrNull { task -> task.id == id } }
+    override fun getTaskByIdAsFlow(id: Long) =
+        tasks.map { it.firstOrNull { task -> task.id == id } }
 
-    fun getTaskByIdAsOneShot(id: Long): Task? {
+    override suspend fun getTaskByIdAsOneShot(id: Long): Task? {
         return _tasks.value.firstOrNull { it.id == id }
     }
 
     @OptIn(ExperimentalTime::class)
-    fun addTask(title: String, description: String, status: TaskStatus) {
+    override suspend fun addTask(title: String, description: String, status: TaskStatus) {
         val now = Clock.System.now().toEpochMilliseconds()
         val newTask = Task(
             id = now,
@@ -34,7 +47,12 @@ object TaskRepository {
     }
 
     @OptIn(ExperimentalTime::class)
-    fun updateTask(id: Long, title: String, description: String, status: TaskStatus) {
+    override suspend fun updateTask(
+        id: Long,
+        title: String,
+        description: String,
+        status: TaskStatus
+    ) {
         val now = Clock.System.now().epochSeconds
         _tasks.update {
             it.map { task ->
@@ -52,11 +70,11 @@ object TaskRepository {
         }
     }
 
-    fun deleteTask(task: Task) {
+    override suspend fun deleteTask(task: Task) {
         _tasks.update { it.filterNot { it.id == task.id } }
     }
 
-    fun changeStatus(id: Long, taskStatus: TaskStatus) {
+    override suspend fun changeStatus(id: Long, taskStatus: TaskStatus) {
         _tasks.update {
             it.map { task ->
                 if (task.id == id) {
